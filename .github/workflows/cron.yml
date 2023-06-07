@@ -32,11 +32,8 @@ jobs:
           git commit -m "[${current}] random cron trigger by ${{ github.event_name }}"
           git push origin master
       - name: update flow name
+        id: 2
         run: |
-          echo "${NEXT}, https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          curl \
-            -X PATCH \
-            -H "Accept: application/vnd.github.v3+json" \
-            --header 'Authorization: Bearer ${{ secrets.PAT }}' \
-            https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }} \
-            -d '{"name":"${{ env.NEXT }}"}'
+          echo "::set-output name=action_title::${NEXT}"
+          echo "##[set-title]$\{{ steps.2.outputs.action_title }}"
+

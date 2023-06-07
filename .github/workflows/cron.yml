@@ -32,9 +32,10 @@ jobs:
           git push origin master
       - name: update flow name
         run: |
-          echo "${NEXT}, ${{ env.NEXT }}, ${{ github.repository }}, ${{ github.run_id }}"
+          echo "${NEXT}, ${{ env.NEXT }}, ${{ github.username }}, ${{ github.user }}, ${{ github.owner }}, ${{ github.repository }}, ${{ github.run_id }}"
           curl \
             -X PATCH \
             -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/${{ github.repository }}/{repo}/actions/runs/${{ github.run_id }} \
+            https://api.github.com/repos/${{ github.username }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \
             -d '{"name":"${{ env.NEXT }}"}'
+    name: Testing, ${{ env.NEXT }} 

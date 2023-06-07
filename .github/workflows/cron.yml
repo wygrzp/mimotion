@@ -32,8 +32,8 @@ jobs:
           git commit -m "[${current}] random cron trigger by ${{ github.event_name }}"
           git push origin master
       - name: update flow name
-        id: 2
+        id: update
         run: |
           echo "::set-output name=action_title::${NEXT}"
-          echo "##[set-title]$\{{ steps.2.outputs.action_title }}"
+          echo "##[set-title]$\{{ steps.update.outputs.action_title }}"
 

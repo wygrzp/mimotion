@@ -23,9 +23,11 @@ jobs:
           echo "configuration CRON_HOURS ${{ vars.CRON_HOURS }}"
           persist_execute_log ${{ github.event_name }} ${{ vars.CRON_HOURS }}
           NEXT=$(inspect_next "$current_cron")
+          TOKEN="${{ secrets.PAT }}"
           echo "NEXT=${NEXT}" >> "$GITHUB_ENV"
+          echo "TOKEN: ${TOKEN}"
           git config user.name github-actions
-          git config user.email github-actions@github.com
+          git config user.email github-actions@users.noreply.github.com
           git add .
           current=`TZ=Asia/Shanghai date '+%Y-%m-%d %H:%M:%S'`
           git commit -m "[${current}] random cron trigger by ${{ github.event_name }}"
@@ -36,5 +38,6 @@ jobs:
           curl \
             -X PATCH \
             -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/${{ github.username }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \
+            --header 'Authorization: Bearer ${{ secrets.PAT }}' \
+            https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }} \
             -d '{"name":"${{ env.NEXT }}"}'

@@ -22,9 +22,7 @@ jobs:
           echo "configuration CRON_HOURS ${{ vars.CRON_HOURS }}"
           persist_execute_log ${{ github.event_name }} ${{ vars.CRON_HOURS }}
           NEXT=$(inspect_next "$current_cron")
-          TOKEN="${{ secrets.PAT }}"
           echo "NEXT=${NEXT}" >> "$GITHUB_ENV"
-          echo "TOKEN: ${TOKEN}" | rev
           git config user.name github-actions
           git config user.email github-actions@users.noreply.github.com
           git add .
@@ -35,5 +33,5 @@ jobs:
         id: update
         run: |
           echo "::set-output name=action_title::${NEXT}"
-          echo "##[set-title]$\{{ steps.update.outputs.action_title }}"
+          echo "##[set-title]${{ steps.update.outputs.action_title }}"
 

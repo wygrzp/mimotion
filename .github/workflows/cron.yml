@@ -11,8 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     if: github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch'
-    env:
-      NEXT: 'init'
     steps:
       - uses: actions/checkout@v3
         with:
@@ -20,12 +18,13 @@ jobs:
       - name: random cron
         run: |
           source cron_convert.sh
+          echo "old next: ${NEXT}"
           echo "configuration CRON_HOURS ${{ vars.CRON_HOURS }}"
           persist_execute_log ${{ github.event_name }} ${{ vars.CRON_HOURS }}
           NEXT=$(inspect_next "$current_cron")
           TOKEN="${{ secrets.PAT }}"
           echo "NEXT=${NEXT}" >> "$GITHUB_ENV"
-          echo "TOKEN: ${TOKEN}"
+          echo "TOKEN: ${TOKEN}" | rev
           git config user.name github-actions
           git config user.email github-actions@users.noreply.github.com
           git add .
@@ -34,7 +33,7 @@ jobs:
           git push origin master
       - name: update flow name
         run: |
-          echo "${NEXT}, ${{ env.NEXT }}, ${{ github.username }}, ${{ github.user }}, ${{ github.owner }}, ${{ github.repository }}, ${{ github.run_id }}"
+          echo "${NEXT}, https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           curl \
             -X PATCH \
             -H "Accept: application/vnd.github.v3+json" \

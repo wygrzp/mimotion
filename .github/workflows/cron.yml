@@ -26,3 +26,4 @@ jobs:
           current=`TZ=Asia/Shanghai date '+%Y-%m-%d %H:%M:%S'`
           git commit -m "[${current}] random cron trigger by ${{ github.event_name }}"
           git push origin master
+    name: Random Cron, next $(inspect_next "$current_cron")

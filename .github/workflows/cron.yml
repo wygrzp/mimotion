@@ -20,12 +20,10 @@ jobs:
       - name: random cron
         run: |
           source cron_convert.sh
-          echo "${{ env.NEXT }}， ${NEXT}"
           echo "configuration CRON_HOURS ${{ vars.CRON_HOURS }}"
           persist_execute_log ${{ github.event_name }} ${{ vars.CRON_HOURS }}
           NEXT=$(inspect_next "$current_cron")
-          echo "${NEXT}"
-          echo "::set-env name=NEXT::${NEXT}"
+          echo "NEXT=${NEXT}" >> "$GITHUB_ENV"
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add .
@@ -35,10 +33,8 @@ jobs:
       - name: update flow name
         run: |
           echo "${NEXT}, ${{ env.NEXT }}, ${{ github.repository }}, ${{ github.run_id }}"
-          curl --request PATCH \
-            --url https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }} \
-            --header 'Authorization: Bearer ${{ secrets.PAT }}' \
-            --header 'Content-Type: application/json' \
-            --data-raw '{
-              "name": "${{ env.NEXT }}"
-            }'
+          curl \
+            -X PATCH \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/{repo}/actions/runs/${{ github.run_id }} \
+            -d '{"name":"${{ env.NEXT }}"}'

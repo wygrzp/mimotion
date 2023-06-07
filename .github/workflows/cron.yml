@@ -31,4 +31,13 @@ jobs:
           current=`TZ=Asia/Shanghai date '+%Y-%m-%d %H:%M:%S'`
           git commit -m "[${current}] random cron trigger by ${{ github.event_name }}"
           git push origin master
-    name: Random Cron, {{ env.NEXT }}
+      - name: update flow name
+        run: |
+          echo "${NEXT}"
+          curl --request PATCH \
+            --url https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }} \
+            --header 'Authorization: Bearer ${{ secrets.PAT }}' \
+            --header 'Content-Type: application/json' \
+            --data-raw '{
+              "name": "${{ env.NEXT }}"
+            }'
